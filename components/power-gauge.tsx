@@ -15,58 +15,84 @@ export function PowerGauge({
   size = 150,
 }: PowerGaugeProps) {
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
-
-  // Convert percentage to rotation angle (0-270 degrees for semicircle starting from top)
-  const rotation = (percentage / 100) * 270;
+  const isDark = colorScheme === "dark";
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      {/* Background circle */}
+      {/* Outer ring background */}
       <View
         style={[
           styles.circleBackground,
           {
             width: size,
             height: size,
-            borderColor: colorScheme === "dark" ? "#2a2a2a" : "#e0e0e0",
+            borderColor: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)",
           },
         ]}
       />
 
-      {/* Foreground gradient circle (simulated with colored arc) */}
+      {/* Progress arc - creates gradient effect with overlapping borders */}
       <View
         style={[
           styles.circleForeground,
           {
             width: size,
             height: size,
-            borderColor: percentage > 60 ? "#FF6B6B" : "#4CAF50",
-            transform: [{ rotate: `${rotation}deg` }],
+            borderTopColor: "#FF6B6B",
+            borderRightColor: "#FF9100",
+            borderBottomColor: "transparent",
+            borderLeftColor: "transparent",
+            transform: [{ rotateZ: `${-45 + (percentage / 100) * 270}deg` }],
           },
         ]}
       />
 
-      {/* Center content */}
-      <View style={styles.centerContent}>
-        <Text
-          style={[
-            styles.percentage,
-            { color: colors.text, fontSize: size * 0.4 },
-          ]}
-        >
-          {percentage}%
-        </Text>
-        <Text
-          style={[styles.label, { color: colors.icon, fontSize: size * 0.1 }]}
-        >
-          {label}
-        </Text>
-      </View>
+      {/* Inner white circle for depth */}
+      <View
+        style={[
+          styles.circleInner,
+          {
+            width: size - 32,
+            height: size - 32,
+            backgroundColor: isDark ? "rgba(30, 30, 40, 0.9)" : "rgba(255, 255, 255, 0.95)",
+            shadowColor: isDark ? "#000" : "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.4 : 0.1,
+            shadowRadius: 8,
+            elevation: 8,
+          },
+        ]}
+      >
+        {/* Center content */}
+        <View style={styles.centerContent}>
+          <Text
+            style={[
+              styles.percentage,
+              { 
+                color: isDark ? "#fff" : "#000",
+                fontSize: size * 0.35,
+              },
+            ]}
+          >
+            {percentage}%
+          </Text>
+          <Text
+            style={[
+              styles.label,
+              {
+                color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
+                fontSize: size * 0.08,
+              },
+            ]}
+          >
+            {label}
+          </Text>
+        </View>
 
-      {/* Lightning icon placeholder */}
-      <View style={styles.lightningIcon}>
-        <Text style={{ fontSize: 24 }}>⚡</Text>
+        {/* Lightning icon */}
+        <View style={styles.lightningIcon}>
+          <Text style={{ fontSize: 22 }}>⚡</Text>
+        </View>
       </View>
     </View>
   );
@@ -79,19 +105,20 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   circleBackground: {
-    borderRadius: 150,
-    borderWidth: 12,
+    borderRadius: 200,
+    borderWidth: 14,
     position: "absolute",
-    opacity: 0.3,
   },
   circleForeground: {
-    borderRadius: 150,
-    borderWidth: 12,
+    borderRadius: 200,
+    borderWidth: 14,
     position: "absolute",
-    borderTopColor: "#FF6B6B",
-    borderRightColor: "#FF6B6B",
-    borderBottomColor: "transparent",
-    borderLeftColor: "transparent",
+  },
+  circleInner: {
+    borderRadius: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
   },
   centerContent: {
     justifyContent: "center",
