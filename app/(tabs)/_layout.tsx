@@ -24,6 +24,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="power"
+        options={{
+          title: 'Power',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="battery.50" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="consumption"
+        options={{
+          title: 'Consumption',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.line.uptrend.xyaxis" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
