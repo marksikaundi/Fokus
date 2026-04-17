@@ -7,6 +7,7 @@ interface CircularTimerProps {
   totalTime: number;
   radius?: number;
   strokeWidth?: number;
+  timeTextSize?: number;
   color?: string;
   textColor?: string;
   bgCircleColor?: string;
@@ -19,6 +20,7 @@ export default function CircularTimer({
   totalTime,
   radius = 132,
   strokeWidth = 5,
+  timeTextSize = 62,
   color = "#5E8362",
   textColor = "#2C2C2C",
   bgCircleColor = "#E3E6E3",
@@ -71,7 +73,10 @@ export default function CircularTimer({
       </Svg>
       <View style={[StyleSheet.absoluteFill, styles.timeContainer]}>
         <ThemedText
-          style={[styles.timeText, { color: textColor }]}
+          style={[
+            styles.timeText,
+            { color: textColor, fontSize: timeTextSize },
+          ]}
           lightColor={textColor}
           darkColor={textColor}
         >

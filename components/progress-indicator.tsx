@@ -55,7 +55,7 @@ export default function ProgressIndicator({
   activeColor,
   inactiveColor,
 }: ProgressIndicatorProps) {
-  const dotSize = 11;
+  const dotSize = 18;
 
   return (
     <View style={styles.container}>
@@ -80,11 +80,7 @@ export default function ProgressIndicator({
                 cy={dotSize / 2}
                 r={dotSize / 2 - 0.5}
                 fill={
-                  isSolid
-                    ? activeColor
-                    : isPie
-                      ? inactiveColor
-                      : inactiveColor
+                  isSolid ? activeColor : isPie ? inactiveColor : inactiveColor
                 }
               />
               {isPie ? (
