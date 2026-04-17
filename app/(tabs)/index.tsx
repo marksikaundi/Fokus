@@ -1,382 +1,236 @@
-import StatBlock from "@/components/stat-block";
-import SummaryCard from "@/components/summary-card";
+import CircularTimer from "@/components/circular-timer";
+import ProgressIndicator from "@/components/progress-indicator";
 import ThemedText from "@/components/themed-text";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { FokusColors } from "@/constants/fokus-theme";
 import { useTimer } from "@/hooks/use-timer";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { StatusBar } from "expo-status-bar";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  useColorScheme,
-} from "react-native";
-import { SafeAreaView as SafeAreaViewContext } from "react-native-safe-area-context";
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
+const WORK_SEC = 25 * 60;
+const REST_SEC = 5 * 60;
+const SESSIONS = 4;
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const { timeRemaining, mode, isRunning, cycleCount } = useTimer({
-    workDuration: 25 * 60,
-    restDuration: 5 * 60,
+  const insets = useSafeAreaInsets();
+  const {
+    timeRemaining,
+    totalDuration,
+    mode,
+    isRunning,
+    cycleCount,
+    toggle,
+    reset,
+  } = useTimer({
+    workDuration: WORK_SEC,
+    restDuration: REST_SEC,
   });
 
-  const [greeting, setGreeting] = useState("Good Morning");
+  const isRest = mode === "rest";
+  const shellBg = "#8AAF89";
+  const cardBg = isRest ? "#5E8C63" : FokusColors.white;
+  const textColor = isRest ? FokusColors.white : FokusColors.textWork;
+  const accent = isRest ? FokusColors.white : FokusColors.sage;
+  const backIconColor = isRest ? FokusColors.white : FokusColors.sageMuted;
 
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      setGreeting("Good Morning");
-    } else if (hour < 18) {
-      setGreeting("Good Afternoon");
-    } else {
-      setGreeting("Good Evening");
-    }
-  }, []);
+  const numSolid = isRest ? cycleCount + 1 : cycleCount;
+  const activePieIndex = isRest
+    ? Math.min(cycleCount + 1, SESSIONS - 1)
+    : cycleCount;
+  const activeFraction =
+    mode === "work"
+      ? 1 - timeRemaining / WORK_SEC
+      : 1 - timeRemaining / REST_SEC;
 
-  const minutes = Math.floor(timeRemaining / 60);
-  const seconds = timeRemaining % 60;
+  const inactiveDots = isRest
+    ? FokusColors.inactiveDotRest
+    : FokusColors.inactiveDot;
 
-  const navigateToTimer = () => {
-    router.push("/(tabs)/timer");
-  };
+  const modeLabel = mode === "work" ? "Work Mode" : "Rest";
+  const controlLabel = isRunning ? "Pause" : "Resume";
 
   return (
-    <SafeAreaViewContext
-      style={[
-        styles.container,
-        { backgroundColor: isDark ? "#151718" : "#fff" },
-      ]}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: shellBg }]}
+      edges={["top", "left", "right"]}
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <ThemedText
-              type="defaultSemiBold"
-              lightColor="#999"
-              darkColor="#999"
-              style={styles.greetingTime}
-            >
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-              })}
-            </ThemedText>
-            <ThemedText type="title" style={styles.greetingText}>
-              {greeting}
-            </ThemedText>
-          </View>
-          <View
-            style={[
-              styles.avatar,
-              { backgroundColor: isDark ? "#262626" : "#F5F5F5" },
-            ]}
+      <StatusBar style={isRest ? "light" : "dark"} />
+      <View style={[styles.phoneCard, { backgroundColor: cardBg }]}>
+        <View style={styles.headerRow}>
+          <Pressable
+            onPress={reset}
+            style={styles.headerSide}
+            accessibilityRole="button"
+            accessibilityLabel="Reset timer"
           >
-            <IconSymbol
-              name="person.crop.circle.fill"
-              size={32}
-              color="#6B9E7F"
+            <Ionicons name="arrow-back" size={24} color={backIconColor} />
+          </Pressable>
+          <View style={styles.headerCenter}>
+            <ProgressIndicator
+              total={SESSIONS}
+              numSolid={numSolid}
+              activePieIndex={activePieIndex}
+              activeFraction={
+                Number.isFinite(activeFraction) ? activeFraction : 0
+              }
+              activeColor={accent}
+              inactiveColor={inactiveDots}
             />
           </View>
+          <View style={styles.headerSide} />
         </View>
 
-        {/* Active Timer Card */}
-        <SummaryCard style={styles.timerCard}>
-          <View style={styles.timerHeader}>
-            <View>
-              <ThemedText
-                lightColor="#999"
-                darkColor="#999"
-                style={styles.timerLabel}
-              >
-                Current Session
-              </ThemedText>
-              <ThemedText
-                type="defaultSemiBold"
-                lightColor="#11181C"
-                darkColor="#ECEDEE"
-                style={styles.timerTime}
-              >
-                {mode === "work" ? "Work Mode" : "Rest Mode"}
-              </ThemedText>
-            </View>
-            <View style={styles.timerBadge}>
-              <IconSymbol
-                name={mode === "work" ? "desktopcomputer" : "star.fill"}
-                size={24}
-                color={mode === "work" ? "#6B9E7F" : "#7FA87F"}
-              />
+        <View style={styles.content}>
+          <View style={styles.centerBlock}>
+            <CircularTimer
+              time={timeRemaining}
+              totalTime={totalDuration}
+              radius={102}
+              strokeWidth={6}
+              timeTextSize={52}
+              color={isRest ? FokusColors.white : FokusColors.sage}
+              textColor={textColor}
+              bgCircleColor={
+                isRest ? "rgba(20,52,33,0.3)" : FokusColors.trackWork
+              }
+              thumbColor={isRest ? FokusColors.white : FokusColors.sage}
+            />
+
+            <Text style={[styles.modeText, { color: textColor }]}>
+              {" "}
+              {modeLabel}
+            </Text>
+
+            <View style={styles.iconContainer}>
+              {mode === "work" ? (
+                <Ionicons name="desktop-outline" size={35} color={accent} />
+              ) : (
+                <Ionicons name="leaf-outline" size={35} color={accent} />
+              )}
             </View>
           </View>
 
-          <View style={styles.timerDisplay}>
-            <ThemedText
-              style={styles.timerBig}
-              lightColor="#11181C"
-              darkColor="#ECEDEE"
-            >
-              {minutes.toString().padStart(2, "0")}:
-              {seconds.toString().padStart(2, "0")}
-            </ThemedText>
-            <View
+          <View
+            style={[
+              styles.footer,
+              { paddingBottom: Math.max(insets.bottom, 12) },
+            ]}
+          >
+            <Pressable
               style={[
-                styles.statusBadge,
+                styles.mainButton,
                 {
-                  backgroundColor: isRunning ? "#6B9E7F20" : "#99999920",
+                  backgroundColor: isRest
+                    ? FokusColors.white
+                    : FokusColors.sage,
                 },
               ]}
+              onPress={toggle}
+              accessibilityRole="button"
+              accessibilityLabel={controlLabel}
             >
-              <View
-                style={[
-                  styles.statusDot,
-                  {
-                    backgroundColor: isRunning ? "#6B9E7F" : "#999",
-                  },
-                ]}
+              <Ionicons
+                name={isRunning ? "pause" : "play"}
+                size={30}
+                color={isRest ? FokusColors.sage : FokusColors.white}
               />
-              <ThemedText
-                style={styles.statusText}
-                lightColor={isRunning ? "#6B9E7F" : "#999"}
-                darkColor={isRunning ? "#6B9E7F" : "#999"}
-              >
-                {isRunning ? "Running" : "Paused"}
-              </ThemedText>
-            </View>
-          </View>
+            </Pressable>
 
-          <Pressable
-            style={[styles.timerButton, { backgroundColor: "#6B9E7F" }]}
-            onPress={navigateToTimer}
-          >
-            <IconSymbol name="timer" size={18} color="white" />
             <ThemedText
-              style={styles.timerButtonText}
-              lightColor="white"
-              darkColor="white"
+              style={[styles.buttonLabel, { color: textColor }]}
+              lightColor={textColor}
+              darkColor={textColor}
             >
-              Go to Timer
+              {controlLabel}
             </ThemedText>
-          </Pressable>
-        </SummaryCard>
-
-        {/* Today's Summary */}
-        <SummaryCard style={{ marginHorizontal: 20, marginBottom: 20 }}>
-          <ThemedText
-            type="defaultSemiBold"
-            lightColor="#11181C"
-            darkColor="#ECEDEE"
-            style={styles.cardTitle}
-          >
-            Today's Summary
-          </ThemedText>
-
-          <StatBlock
-            label="Cycles Completed"
-            value={cycleCount}
-            icon="checkmark.circle"
-            color="#6B9E7F"
-          />
-          <StatBlock
-            label="Total Time"
-            value={`${cycleCount * 30 + minutes}m`}
-            icon="clock"
-            color="#7FA87F"
-          />
-          <StatBlock
-            label="Focus Sessions"
-            value={cycleCount}
-            icon="flame"
-            color="#D4A574"
-          />
-        </SummaryCard>
-
-        {/* Quick Actions */}
-        <SummaryCard style={{ marginHorizontal: 20, marginBottom: 20 }}>
-          <ThemedText
-            type="defaultSemiBold"
-            lightColor="#11181C"
-            darkColor="#ECEDEE"
-            style={styles.cardTitle}
-          >
-            Quick Access
-          </ThemedText>
-
-          <View style={styles.quickActions}>
-            <Pressable
-              style={[
-                styles.actionButton,
-                { backgroundColor: isDark ? "#262626" : "#F5F5F5" },
-              ]}
-              onPress={navigateToTimer}
-            >
-              <IconSymbol name="timer" size={24} color="#6B9E7F" />
-              <ThemedText
-                style={styles.actionText}
-                lightColor="#11181C"
-                darkColor="#ECEDEE"
-              >
-                Timer
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.actionButton,
-                { backgroundColor: isDark ? "#262626" : "#F5F5F5" },
-              ]}
-              onPress={() => router.push("/(tabs)/explore")}
-            >
-              <IconSymbol name="paperplane.fill" size={24} color="#7FA87F" />
-              <ThemedText
-                style={styles.actionText}
-                lightColor="#11181C"
-                darkColor="#ECEDEE"
-              >
-                Explore
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.actionButton,
-                { backgroundColor: isDark ? "#262626" : "#F5F5F5" },
-              ]}
-              onPress={() => {}}
-            >
-              <IconSymbol name="gear" size={24} color="#D4A574" />
-              <ThemedText
-                style={styles.actionText}
-                lightColor="#11181C"
-                darkColor="#ECEDEE"
-              >
-                Settings
-              </ThemedText>
-            </Pressable>
           </View>
-        </SummaryCard>
-
-        {/* Footer Spacing */}
-        <View style={{ height: 20 }} />
-      </ScrollView>
-    </SafeAreaViewContext>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+  phoneCard: {
+    flex: 1,
+    borderRadius: 28,
+    overflow: "hidden",
+    shadowColor: "#1B3A24",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.24,
+    shadowRadius: 18,
+    elevation: 10,
   },
-  greetingTime: {
-    fontSize: 13,
-    marginBottom: 6,
-  },
-  greetingText: {
-    fontSize: 32,
-    fontWeight: "800",
-  },
-  avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  timerCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: "#6B9E7F08",
-  },
-  timerHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  timerLabel: {
-    fontSize: 12,
-    marginBottom: 6,
-  },
-  timerTime: {
-    fontSize: 16,
-  },
-  timerBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#6B9E7F15",
-  },
-  timerDisplay: {
-    alignItems: "center",
-    marginVertical: 24,
-    gap: 16,
-  },
-  timerBig: {
-    fontSize: 64,
-    fontWeight: "700",
-    letterSpacing: 2,
-  },
-  statusBadge: {
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 24,
-    gap: 8,
+    paddingTop: 10,
+    paddingBottom: 2,
   },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  statusText: {
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  timerButton: {
-    flexDirection: "row",
-    alignItems: "center",
+  headerSide: {
+    width: 44,
+    height: 44,
     justifyContent: "center",
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 10,
-    marginTop: 16,
+    alignItems: "center",
   },
-  timerButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  cardTitle: {
-    fontSize: 18,
-    marginBottom: 18,
-    fontWeight: "600",
-  },
-  quickActions: {
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-  },
-  actionButton: {
+  headerCenter: {
     flex: 1,
-    paddingVertical: 18,
-    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  content: {
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 6,
+  },
+  centerBlock: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 10,
+    minHeight: 0,
   },
-  actionText: {
-    fontSize: 13,
+  modeText: {
+    marginTop: 18,
+    fontSize: 33,
     fontWeight: "600",
+    letterSpacing: 1,
+    opacity: 0.95,
+  },
+  iconContainer: {
+    marginTop: 8,
+  },
+  footer: {
+    width: "100%",
+    alignItems: "center",
+  },
+  mainButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  buttonLabel: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 1,
+    marginBottom: 6,
   },
 });
