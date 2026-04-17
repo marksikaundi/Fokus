@@ -24,7 +24,9 @@ export default function TimerScreen() {
   const accent = isRest ? FokusColors.white : FokusColors.sage;
 
   const numSolid = isRest ? cycleCount + 1 : cycleCount;
-  const activePieIndex = isRest ? numSolid : cycleCount;
+  const activePieIndex = isRest
+    ? Math.min(cycleCount + 1, SESSIONS - 1)
+    : cycleCount;
   const activeFraction =
     mode === "work"
       ? 1 - timeRemaining / WORK_SEC

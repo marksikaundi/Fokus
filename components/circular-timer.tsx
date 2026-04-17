@@ -61,10 +61,11 @@ export default function CircularTimer({
           stroke={color}
           strokeWidth={strokeWidth}
           fill="none"
-          strokeDasharray={`${circumference}`}
+          strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          transform={`rotate(-90 ${cx} ${cy})`}
+          rotation="-90"
+          origin={`${cx}, ${cy}`}
         />
         <Circle cx={thumbX} cy={thumbY} r={thumbR} fill={thumb} />
       </Svg>
