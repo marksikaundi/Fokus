@@ -76,15 +76,15 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 20,
+    marginVertical: 16,
   },
   timeContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   timeText: {
-    fontSize: 56,
-    fontWeight: "600",
+    fontSize: 62,
+    fontWeight: "700",
     letterSpacing: 2,
   },
 });

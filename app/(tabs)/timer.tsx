@@ -67,10 +67,10 @@ export default function TimerScreen() {
           time={timeRemaining}
           totalTime={totalDuration}
           color={isDarkMode ? "#FFFFFF" : currentColor}
-          radius={100}
-          strokeWidth={10}
+          radius={110}
+          strokeWidth={12}
           textColor={isDarkMode ? "#FFFFFF" : "#11181C"}
-          bgCircleColor={isDarkMode ? "#FFFFFF40" : "#E0E0E0"}
+          bgCircleColor={isDarkMode ? "#FFFFFF30" : "#E5E5E5"}
         />
 
         {/* Mode Text */}
@@ -86,7 +86,7 @@ export default function TimerScreen() {
         <View style={styles.iconContainer}>
           <IconSymbol
             name={modeIcon}
-            size={40}
+            size={44}
             color={isDarkMode ? "#FFFFFF" : currentColor}
           />
         </View>
@@ -103,7 +103,7 @@ export default function TimerScreen() {
         >
           <IconSymbol
             name={buttonIcon}
-            size={36}
+            size={40}
             color={isDarkMode ? currentColor : "#FFFFFF"}
           />
         </Pressable>
@@ -116,20 +116,6 @@ export default function TimerScreen() {
         >
           {buttonText}
         </ThemedText>
-
-        {/* Skip Button */}
-        <Pressable onPress={skip} style={styles.skipButton}>
-          <ThemedText
-            style={[
-              styles.skipText,
-              { color: isDarkMode ? "#FFFFFF99" : "#99999999" },
-            ]}
-            lightColor={isDarkMode ? "#FFFFFF99" : "#999999"}
-            darkColor={isDarkMode ? "#FFFFFF99" : "#999999"}
-          >
-            Skip
-          </ThemedText>
-        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -141,55 +127,48 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   progressSection: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 20,
   },
   content: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   modeText: {
-    marginTop: 28,
-    marginBottom: 12,
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  iconContainer: {
-    marginVertical: 16,
-  },
-  mainButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
     marginTop: 32,
     marginBottom: 16,
+    fontSize: 17,
+    fontWeight: "600",
+    letterSpacing: 0.3,
+  },
+  iconContainer: {
+    marginVertical: 20,
+  },
+  mainButton: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
   },
   buttonLabel: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 32,
-  },
-  skipButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-  },
-  skipText: {
-    fontSize: 13,
-    fontWeight: "500",
+    letterSpacing: 0.5,
   },
 });
