@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 
 interface ProgressIndicatorProps {
@@ -11,6 +11,7 @@ interface ProgressIndicatorProps {
   activeFraction: number;
   activeColor: string;
   inactiveColor: string;
+  onDotPress?: (index: number) => void;
 }
 
 function PieSegment({
@@ -54,6 +55,7 @@ export default function ProgressIndicator({
   activeFraction,
   activeColor,
   inactiveColor,
+  onDotPress,
 }: ProgressIndicatorProps) {
   const dotSize = 18;
 
@@ -64,7 +66,7 @@ export default function ProgressIndicator({
         const isPie = index === activePieIndex;
 
         return (
-          <View
+          <Pressable
             key={index}
             style={[
               styles.dotWrap,
@@ -73,6 +75,10 @@ export default function ProgressIndicator({
                 height: dotSize,
               },
             ]}
+            onPress={() => onDotPress?.(index)}
+            accessibilityRole="button"
+            accessibilityLabel={`Session ${index + 1}`}
+            hitSlop={6}
           >
             <Svg width={dotSize} height={dotSize}>
               <Circle
@@ -91,7 +97,7 @@ export default function ProgressIndicator({
                 />
               ) : null}
             </Svg>
-          </View>
+          </Pressable>
         );
       })}
     </View>

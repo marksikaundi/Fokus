@@ -4,6 +4,7 @@ import ThemedText from "@/components/themed-text";
 import { FokusColors } from "@/constants/fokus-theme";
 import { useTimer } from "@/hooks/use-timer";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
@@ -16,6 +17,7 @@ const REST_SEC = 5 * 60;
 const SESSIONS = 4;
 
 export default function TimerScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const {
     timeRemaining,
@@ -25,6 +27,7 @@ export default function TimerScreen() {
     cycleCount,
     toggle,
     reset,
+    skip,
   } = useTimer({
     workDuration: WORK_SEC,
     restDuration: REST_SEC,
@@ -53,6 +56,13 @@ export default function TimerScreen() {
   const modeLabel = mode === "work" ? "Work Mode" : "Rest";
   const controlLabel = isRunning ? "Pause" : "Resume";
 
+  const handleDotPress = () => {
+    if (mode === "work") {
+      skip();
+    }
+    router.push("/(tabs)/rest");
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: shellBg }]}
@@ -79,6 +89,7 @@ export default function TimerScreen() {
               }
               activeColor={accent}
               inactiveColor={inactiveDots}
+              onDotPress={handleDotPress}
             />
           </View>
           <View style={styles.headerSide} />

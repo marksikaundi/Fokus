@@ -6,6 +6,7 @@ export default function TabLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="explore" />
       <Stack.Screen name="timer" />
+      <Stack.Screen name="rest" />
     </Stack>
   );
 }
