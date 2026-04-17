@@ -4,33 +4,21 @@ import ThemedText from "@/components/themed-text";
 import { FokusColors } from "@/constants/fokus-theme";
 import { useTimer } from "@/hooks/use-timer";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const WORK_SEC = 25 * 60;
 const REST_SEC = 5 * 60;
 const SESSIONS = 4;
 
 export default function TimerScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { timeRemaining, totalDuration, mode, isRunning, cycleCount, toggle, reset } =
     useTimer({
       workDuration: WORK_SEC,
       restDuration: REST_SEC,
     });
-
-  useFocusEffect(
-    useCallback(() => {
-      const tabNav = navigation.getParent();
-      tabNav?.setOptions({ tabBarStyle: { display: "none" } });
-      return () => {
-        tabNav?.setOptions({ tabBarStyle: undefined });
-      };
-    }, [navigation]),
-  );
 
   const isRest = mode === "rest";
   const bgColor = isRest ? FokusColors.restBackground : FokusColors.white;
@@ -50,10 +38,11 @@ export default function TimerScreen() {
   const inactiveDots = isRest ? FokusColors.inactiveDotRest : FokusColors.inactiveDot;
 
   const modeLabel = mode === "work" ? "Work Mode" : "Rest";
-  const controlLabel = isRunning ? "pause" : "resume";
+  const controlLabel = isRunning ? "Pause" : "Resume";
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]} edges={["top", "left", "right"]}>
+      <StatusBar style={isRest ? "light" : "dark"} />
       <View style={styles.headerRow}>
         <Pressable
           onPress={reset}
@@ -61,7 +50,7 @@ export default function TimerScreen() {
           accessibilityRole="button"
           accessibilityLabel="Reset timer"
         >
-          <Ionicons name="chevron-back" size={26} color={accent} />
+          <Ionicons name="chevron-back" size={28} color={backIconColor} />
         </Pressable>
         <View style={styles.headerCenter}>
           <ProgressIndicator
@@ -77,52 +66,54 @@ export default function TimerScreen() {
       </View>
 
       <View style={styles.content}>
-        <CircularTimer
-          time={timeRemaining}
-          totalTime={totalDuration}
-          radius={118}
-          strokeWidth={11}
-          color={isRest ? FokusColors.white : FokusColors.sage}
-          textColor={textColor}
-          bgCircleColor={isRest ? FokusColors.trackRest : FokusColors.trackWork}
-          thumbColor={isRest ? FokusColors.white : FokusColors.sage}
-        />
+        <View style={styles.centerBlock}>
+          <CircularTimer
+            time={timeRemaining}
+            totalTime={totalDuration}
+            color={isRest ? FokusColors.white : FokusColors.sage}
+            textColor={textColor}
+            bgCircleColor={isRest ? FokusColors.trackRest : FokusColors.trackWork}
+            thumbColor={isRest ? FokusColors.white : FokusColors.sage}
+          />
 
-        <Text style={[styles.modeText, { color: textColor }]}>{modeLabel}</Text>
+          <Text style={[styles.modeText, { color: textColor }]}>{modeLabel}</Text>
 
-        <View style={styles.iconContainer}>
-          {mode === "work" ? (
-            <Ionicons name="desktop-outline" size={40} color={accent} />
-          ) : (
-            <Ionicons name="leaf-outline" size={40} color={accent} />
-          )}
+          <View style={styles.iconContainer}>
+            {mode === "work" ? (
+              <Ionicons name="desktop-outline" size={36} color={accent} />
+            ) : (
+              <Ionicons name="leaf-outline" size={36} color={accent} />
+            )}
+          </View>
         </View>
 
-        <Pressable
-          style={[
-            styles.mainButton,
-            {
-              backgroundColor: isRest ? FokusColors.white : FokusColors.sage,
-            },
-          ]}
-          onPress={toggle}
-          accessibilityRole="button"
-          accessibilityLabel={isRunning ? "Pause" : "Resume"}
-        >
-          <Ionicons
-            name={isRunning ? "pause" : "play"}
-            size={32}
-            color={isRest ? FokusColors.sage : FokusColors.white}
-          />
-        </Pressable>
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+          <Pressable
+            style={[
+              styles.mainButton,
+              {
+                backgroundColor: isRest ? FokusColors.white : FokusColors.sage,
+              },
+            ]}
+            onPress={toggle}
+            accessibilityRole="button"
+            accessibilityLabel={controlLabel}
+          >
+            <Ionicons
+              name={isRunning ? "pause" : "play"}
+              size={34}
+              color={isRest ? FokusColors.sage : FokusColors.white}
+            />
+          </Pressable>
 
-        <ThemedText
-          style={[styles.buttonLabel, { color: textColor }]}
-          lightColor={textColor}
-          darkColor={textColor}
-        >
-          {controlLabel}
-        </ThemedText>
+          <ThemedText
+            style={[styles.buttonLabel, { color: textColor }]}
+            lightColor={textColor}
+            darkColor={textColor}
+          >
+            {controlLabel}
+          </ThemedText>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -152,35 +143,46 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  centerBlock: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 28,
-    paddingBottom: 32,
+    minHeight: 0,
   },
   modeText: {
-    marginTop: 28,
-    fontSize: 13,
-    fontWeight: "500",
-    letterSpacing: 4,
+    marginTop: 22,
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 3.5,
     textTransform: "uppercase",
+    opacity: 0.92,
   },
   iconContainer: {
-    marginTop: 14,
-    marginBottom: 8,
+    marginTop: 12,
+  },
+  footer: {
+    width: "100%",
+    alignItems: "center",
   },
   mainButton: {
-    width: 86,
-    height: 86,
-    borderRadius: 43,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 36,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonLabel: {
-    marginTop: 12,
+    marginTop: 10,
     fontSize: 13,
-    fontWeight: "500",
-    letterSpacing: 0.2,
-    textTransform: "lowercase",
+    fontWeight: "600",
+    letterSpacing: 0.4,
   },
 });
