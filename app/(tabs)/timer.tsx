@@ -1,50 +1,62 @@
-import React from 'react';
+import CircularTimer from "@/components/circular-timer";
+import ProgressIndicator from "@/components/progress-indicator";
+import ThemedText from "@/components/themed-text";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Colors } from "@/constants/theme";
+import { useTimer } from "@/hooks/use-timer";
 import {
-  View,
-  StyleSheet,
   Pressable,
-  useColorScheme,
   SafeAreaView,
-} from 'react-native';
-import { useTimer } from '@/hooks/use-timer';
-import CircularTimer from '@/components/circular-timer';
-import ProgressIndicator from '@/components/progress-indicator';
-import ThemedText from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+  StyleSheet,
+  useColorScheme,
+  View,
+} from "react-native";
 
 export default function TimerScreen() {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
-  const { timeRemaining, totalDuration, mode, isRunning, cycleCount, toggle, reset, skip } =
-    useTimer({
-      workDuration: 25 * 60,
-      restDuration: 5 * 60,
-    });
+  const {
+    timeRemaining,
+    totalDuration,
+    mode,
+    isRunning,
+    cycleCount,
+    toggle,
+    reset,
+    skip,
+  } = useTimer({
+    workDuration: 25 * 60,
+    restDuration: 5 * 60,
+  });
 
-  const workColor = '#6B9E7F';
-  const restColor = '#7FA87F';
-  const currentColor = mode === 'work' ? workColor : restColor;
+  const workColor = "#6B9E7F";
+  const restColor = "#7FA87F";
+  const currentColor = mode === "work" ? workColor : restColor;
 
-  const modeText = mode === 'work' ? 'Work Mode' : 'Rest';
-  const modeIcon = mode === 'work' ? 'desktopcomputer' : 'star.fill';
+  const modeText = mode === "work" ? "Work Mode" : "Rest";
+  const modeIcon = mode === "work" ? "desktopcomputer" : "star.fill";
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#151718' : '#fff' }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? "#151718" : "#fff" },
+      ]}
+    >
       <View style={styles.header}>
         <Pressable onPress={reset}>
           <IconSymbol
             name="chevron.left"
             size={28}
-            color={Colors[colorScheme ?? 'light'].tint}
+            color={Colors[colorScheme ?? "light"].tint}
           />
         </Pressable>
       </View>
 
       <ProgressIndicator
         total={4}
-        current={Math.min(cycleCount + (mode === 'rest' ? 1 : 0), 4)}
+        current={Math.min(cycleCount + (mode === "rest" ? 1 : 0), 4)}
         color={currentColor}
       />
 
@@ -67,11 +79,7 @@ export default function TimerScreen() {
         </ThemedText>
 
         <View style={styles.iconContainer}>
-          <IconSymbol
-            name={modeIcon}
-            size={48}
-            color={currentColor}
-          />
+          <IconSymbol name={modeIcon} size={48} color={currentColor} />
         </View>
 
         <Pressable
@@ -84,7 +92,7 @@ export default function TimerScreen() {
           onPress={toggle}
         >
           <IconSymbol
-            name={isRunning ? 'pause.fill' : 'play.fill'}
+            name={isRunning ? "pause.fill" : "play.fill"}
             size={28}
             color="white"
           />
@@ -93,7 +101,7 @@ export default function TimerScreen() {
             darkColor="white"
             lightColor="white"
           >
-            {isRunning ? 'Pause' : 'Resume'}
+            {isRunning ? "Pause" : "Resume"}
           </ThemedText>
         </Pressable>
 
@@ -103,7 +111,7 @@ export default function TimerScreen() {
             lightColor={currentColor}
             darkColor={currentColor}
           >
-            Skip to {mode === 'work' ? 'Rest' : 'Work'}
+            Skip to {mode === "work" ? "Rest" : "Work"}
           </ThemedText>
         </Pressable>
       </View>
@@ -117,28 +125,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "flex-start",
     marginBottom: 20,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modeText: {
     marginTop: 20,
     marginBottom: 20,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   iconContainer: {
     marginVertical: 24,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 28,
@@ -147,7 +155,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   skipButton: {
     marginTop: 20,
@@ -155,6 +163,6 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

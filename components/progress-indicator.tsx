@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from "react-native";
 
 interface ProgressIndicatorProps {
   total: number;
@@ -11,8 +10,8 @@ interface ProgressIndicatorProps {
 export default function ProgressIndicator({
   total,
   current,
-  color = '#6B9E7F',
-  inactiveColor = '#D3D3D3',
+  color = "#6B9E7F",
+  inactiveColor = "#D3D3D3",
 }: ProgressIndicatorProps) {
   return (
     <View style={styles.container}>
@@ -33,9 +32,9 @@ export default function ProgressIndicator({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 20,
   },
   dot: {
