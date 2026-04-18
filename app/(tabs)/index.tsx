@@ -2,7 +2,8 @@ import CircularTimer from "@/components/circular-timer";
 import ProgressIndicator from "@/components/progress-indicator";
 import ThemedText from "@/components/themed-text";
 import { FokusColors } from "@/constants/fokus-theme";
-import { useTimer } from "@/hooks/use-timer";
+import { REST_SEC, SESSIONS, WORK_SEC } from "@/constants/timer";
+import { useTimerContext } from "@/context/timer-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,10 +11,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-
-const WORK_SEC = 25 * 60;
-const REST_SEC = 5 * 60;
-const SESSIONS = 4;
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -25,10 +22,7 @@ export default function HomeScreen() {
     cycleCount,
     toggle,
     reset,
-  } = useTimer({
-    workDuration: WORK_SEC,
-    restDuration: REST_SEC,
-  });
+  } = useTimerContext();
 
   const isRest = mode === "rest";
   const shellBg = "#8AAF89";

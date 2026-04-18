@@ -1,5 +1,7 @@
+import CircularTimer from "@/components/circular-timer";
 import ThemedText from "@/components/themed-text";
 import { FokusColors } from "@/constants/fokus-theme";
+import { useTimerContext } from "@/context/timer-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -12,6 +14,7 @@ import {
 export default function RestScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { timeRemaining, totalDuration } = useTimerContext();
 
   return (
     <SafeAreaView
@@ -35,6 +38,17 @@ export default function RestScreen() {
 
         <View style={styles.content}>
           <View style={styles.centerBlock}>
+            <CircularTimer
+              time={timeRemaining}
+              totalTime={totalDuration}
+              radius={94}
+              strokeWidth={6}
+              timeTextSize={44}
+              color={FokusColors.white}
+              textColor={FokusColors.white}
+              bgCircleColor="rgba(20,52,33,0.3)"
+              thumbColor={FokusColors.white}
+            />
             <Ionicons name="leaf-outline" size={58} color={FokusColors.white} />
             <ThemedText
               style={styles.title}
